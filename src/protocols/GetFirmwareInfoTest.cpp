@@ -1,7 +1,9 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "tests/protocols/SerialPortMock.h"
+#include "protocols/SerialPortMock.h"
 #include "LMS64CProtocol.h"
 
 using namespace lime;
@@ -114,3 +116,5 @@ TEST(LMS64CProtocol, GetFirmwareInfoWrongStatus)
 
     EXPECT_EQ(returnValue, OpStatus::IO_FAILURE);
 }
+
+#endif // TESTING

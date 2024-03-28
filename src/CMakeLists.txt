@@ -21,6 +21,19 @@ endif()
 ## lime suite library
 ########################################################################
 set(LIME_SUITE_SOURCES
+    parsers/CoefficientFileParserTest.cpp
+    protocols/CustomParameterReadTest.cpp
+    protocols/CustomParameterWriteTest.cpp
+    protocols/DeviceResetTest.cpp
+    protocols/FirmwareToDescriptorTest.cpp
+    protocols/FPGA_SPITest.cpp
+    protocols/GetFirmwareInfoTest.cpp
+    protocols/GPIODirReadTest.cpp
+    protocols/GPIODirWriteTest.cpp
+    protocols/GPIOReadTest.cpp
+    protocols/GPIOWriteTest.cpp
+    protocols/LMS7002M_SPITest.cpp
+    protocols/BufferInterleavingTest.cpp
     StreamComposite.cpp
     CommonFunctions.cpp
     Logger.cpp
@@ -316,4 +329,38 @@ add_subdirectory(cli)
 #########################################################################
 if(ENABLE_TESTING)
     add_subdirectory(tests)
+
+    set(LIME_TEST_SUITE_NAME limesuiteng-test)
+    add_executable(${LIME_TEST_SUITE_NAME} ${LIME_SUITE_SOURCES})
+    find_package(GTest)
+    # target_include_directories(${LIME_TEST_SUITE_NAME} PUBLIC ${LIME_SUITE_INCLUDES} tests)
+    target_link_libraries(
+        ${LIME_TEST_SUITE_NAME}
+        PUBLIC
+        ${MAIN_LIBRARY_NAME}
+        GTest::gtest_main
+        GTest::gmock_main
+    )
+
+    target_include_directories(${MAIN_LIBRARY_NAME} PUBLIC ${GTEST_INCLUDE_DIRS})
+
+
+
+    if (CMAKE_BINARY_DIR)
+        set_target_properties(${LIME_TEST_SUITE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+    endif()
+
+    include(GoogleTest)
+    gtest_discover_tests(${LIME_TEST_SUITE_NAME})
+
+    if (NOT GTest_FOUND)
+        message(FATAL_ERROR "FOUND")
+    endif()
+
+    # if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND ENABLE_CODE_COVERAGE AND (NOT MSVC))
+    #     include(CodeCoverage)
+    #     setup_target_for_coverage_lcov(NAME ${LIME_TEST_SUITE_NAME}_coverage EXECUTABLE ${LIME_TEST_SUITE_NAME} EXCLUDE "/usr/*" "build/*" "external/*" "tests/*")
+    #     target_link_libraries(${LIME_TEST_SUITE_NAME} PUBLIC gcov)
+    # endif()
+
 endif()

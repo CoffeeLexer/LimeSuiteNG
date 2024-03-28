@@ -1,3 +1,5 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -104,3 +106,5 @@ TEST(USB_CSR_Pipe_SDR, ReadControlTransfer)
 #endif
     pipe.Read(reinterpret_cast<uint8_t*>(&pkt), length, timeout);
 }
+
+#endif // TESTING

@@ -1,3 +1,5 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -181,3 +183,5 @@ TEST(LimeSDR_Mini, Constructor)
 
     LimeSDR_Mini(lms7002mRoute, fpgaRoute, usbComms, usbPipe);
 }
+
+#endif // TESTING

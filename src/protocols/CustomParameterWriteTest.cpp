@@ -1,7 +1,9 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "tests/protocols/SerialPortMock.h"
+#include "protocols/SerialPortMock.h"
 #include "LMS64CProtocol.h"
 
 using namespace lime;
@@ -236,3 +238,5 @@ TEST(LMS64CProtocol, CustomParameterWriteWrongStatus)
 
     EXPECT_THROW(LMS64CProtocol::CustomParameterWrite(mockPort, { { 16, 127.0, "C" } }, subdevice);, std::runtime_error);
 }
+
+#endif // TESTING

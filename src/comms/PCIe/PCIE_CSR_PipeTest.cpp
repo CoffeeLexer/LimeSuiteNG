@@ -1,3 +1,5 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -34,3 +36,5 @@ TEST(PCIE_CSR_Pipe, Read)
     EXPECT_CALL(*mockConnection, ReadControl(Pointer(reinterpret_cast<uint8_t*>(&pkt)), length, timeout)).Times(1);
     pipe.Read(reinterpret_cast<uint8_t*>(&pkt), length, timeout);
 }
+
+#endif // TESTING

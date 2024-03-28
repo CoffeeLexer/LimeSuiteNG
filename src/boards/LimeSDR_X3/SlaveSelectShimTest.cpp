@@ -1,3 +1,5 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <memory>
@@ -49,3 +51,5 @@ TEST(SlaveSelectShim, ResetsCorrectDevice)
     EXPECT_CALL(*mockComms, ResetDevice(slaveId)).Times(1);
     shim.ResetDevice();
 }
+
+#endif // TESTING

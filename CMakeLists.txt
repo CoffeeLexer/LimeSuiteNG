@@ -174,6 +174,7 @@ cmake_dependent_option(ENABLE_TESTING "Use GoogleTest to test the library" ON "N
 cmake_dependent_option(ENABLE_CODE_COVERAGE "Use gcov/lcov to generate a code coverage report" ON "ENABLE_TESTING" OFF)
 
 if(ENABLE_TESTING)
+    add_compile_definitions(TESTING)
     include(CTest)
     include(FetchContent)
     FetchContent_Declare(

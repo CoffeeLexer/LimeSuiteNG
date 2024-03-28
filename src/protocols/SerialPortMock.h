@@ -1,3 +1,5 @@
+#ifdef TESTING
+
 #ifndef LIME_SERIALPORTMOCK_H
 #define LIME_SERIALPORTMOCK_H
 
@@ -22,3 +24,5 @@ class SerialPortMock : public ISerialPort
 } // namespace lime::testing
 
 #endif // LIME_SERIALPORTMOCK_H
+
+#endif // TESTING
