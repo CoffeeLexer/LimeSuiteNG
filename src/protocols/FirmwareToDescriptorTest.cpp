@@ -1,3 +1,5 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -49,3 +51,5 @@ TEST(LMS64CProtocol, FirmwareToDescriptorUnknownsHigh)
     EXPECT_EQ(descriptor.protocolVersion, "2000004");
     EXPECT_EQ(descriptor.serialNumber, 2000005);
 }
+
+#endif // TESTING

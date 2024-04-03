@@ -1,8 +1,10 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <memory>
 
-#include "tests/include/limesuite/CommsMock.h"
+#include "include/limesuite/CommsMock.h"
 #include "LimeSDR_X3/SlaveSelectShim.h"
 
 using namespace lime;
@@ -49,3 +51,5 @@ TEST(SlaveSelectShim, ResetsCorrectDevice)
     EXPECT_CALL(*mockComms, ResetDevice(slaveId)).Times(1);
     shim.ResetDevice();
 }
+
+#endif // TESTING

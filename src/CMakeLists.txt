@@ -21,6 +21,20 @@ endif()
 ## lime suite library
 ########################################################################
 set(LIME_SUITE_SOURCES
+    tests/LibraryTestEntry.cpp
+    parsers/CoefficientFileParserTest.cpp
+    protocols/CustomParameterReadTest.cpp
+    protocols/CustomParameterWriteTest.cpp
+    protocols/DeviceResetTest.cpp
+    protocols/FirmwareToDescriptorTest.cpp
+    protocols/FPGA_SPITest.cpp
+    protocols/GetFirmwareInfoTest.cpp
+    protocols/GPIODirReadTest.cpp
+    protocols/GPIODirWriteTest.cpp
+    protocols/GPIOReadTest.cpp
+    protocols/GPIOWriteTest.cpp
+    protocols/LMS7002M_SPITest.cpp
+    protocols/BufferInterleavingTest.cpp
     StreamComposite.cpp
     CommonFunctions.cpp
     include/limesuiteng/Logger.cpp
@@ -115,7 +129,7 @@ if (ENABLE_LIBRARY)
     set_target_properties(${MAIN_LIBRARY_NAME} PROPERTIES SOVERSION ${LIME_SUITE_SOVER})
     set_target_properties(${MAIN_LIBRARY_NAME} PROPERTIES VERSION ${LIME_SUITE_LIBVER})
     set_target_properties(${MAIN_LIBRARY_NAME} PROPERTIES DEFINE_SYMBOL "LIME_DLL_EXPORTS")
-    target_include_directories(${MAIN_LIBRARY_NAME} PRIVATE ${LIME_SUITE_INCLUDES})
+    target_include_directories(${MAIN_LIBRARY_NAME} PUBLIC ${LIME_SUITE_INCLUDES})
     target_include_directories(${MAIN_LIBRARY_NAME} INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -321,5 +335,41 @@ add_subdirectory(cli)
 # GTest tests
 #########################################################################
 if(ENABLE_TESTING)
-    add_subdirectory(tests)
+    set(LIME_TEST_SUITE_NAME limesuiteng-test)
+
+    find_package(GTest)
+
+    enable_testing()
+
+    add_executable(${LIME_TEST_SUITE_NAME} ./tests/TestEntry.cpp parsers/CoefficientFileParserTest.cpp )
+
+    target_link_libraries(
+        ${MAIN_LIBRARY_NAME}
+        PUBLIC
+        GTest::gtest_main
+        GTest::gmock_main
+    )
+
+    target_link_libraries(
+        ${LIME_TEST_SUITE_NAME}
+        PUBLIC
+        ${MAIN_LIBRARY_NAME}
+    )
+
+    target_include_directories(${MAIN_LIBRARY_NAME} PUBLIC ${GTEST_INCLUDE_DIRS})
+
+    if (CMAKE_BINARY_DIR)
+        set_target_properties(${LIME_TEST_SUITE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+    endif()
+
+
+    gtest_discover_tests(${MAIN_LIBRARY_NAME} DISCOVERY_MODE PRE_TEST)
+    include(GoogleTest)
+
+    # if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND ENABLE_CODE_COVERAGE AND (NOT MSVC))
+    #     include(CodeCoverage)
+    #     setup_target_for_coverage_lcov(NAME ${LIME_TEST_SUITE_NAME}_coverage EXECUTABLE ${LIME_TEST_SUITE_NAME} EXCLUDE "/usr/*" "build/*" "external/*" "tests/*")
+    #     target_link_libraries(${LIME_TEST_SUITE_NAME} PUBLIC gcov)
+    # endif()
+
 endif()

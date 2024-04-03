@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "limesuiteng/config.h"
-#include "FPGA_common.h"
+#include "FPGA_common/FPGA_common.h"
 
 #include <vector>
 #include <cstdint>

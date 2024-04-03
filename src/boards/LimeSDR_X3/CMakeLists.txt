@@ -8,6 +8,7 @@ set(LIMESDR_X3_SOURCES
     ${THIS_SOURCE_DIR}/FPGA_X3.cpp
     ${THIS_SOURCE_DIR}/LimeSDR_X3.cpp
     ${THIS_SOURCE_DIR}/SlaveSelectShim.cpp
+    ${THIS_SOURCE_DIR}/SlaveSelectShimTest.cpp
 )
 
 ########################################################################

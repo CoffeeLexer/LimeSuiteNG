@@ -1,7 +1,9 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "parsers/CoefficientFileParser.h"
+#include "CoefficientFileParser.h"
 
 #include <fstream>
 #include <filesystem>
@@ -576,3 +578,5 @@ TEST(CoefficientFileParser, SaveFileInSubfolder)
 
     std::filesystem::remove(fileName);
 }
+
+#endif // TESTING

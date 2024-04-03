@@ -1,7 +1,7 @@
 #include "LMS7002M_SDRDevice.h"
 
 #include "DeviceExceptions.h"
-#include "FPGA_common.h"
+#include "FPGA_common/FPGA_common.h"
 #include "limesuiteng/LMS7002M.h"
 #include "mcu_program/common_src/lms7002m_calibrations.h"
 #include "mcu_program/common_src/lms7002m_filters.h"

@@ -1,7 +1,9 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "tests/comms/USB/FT601/FT601Mock.h"
+#include "comms/USB/FT601/FT601Mock.h"
 #include "boards/LimeSDR_Mini/USB_CSR_Pipe_Mini.h"
 #include "LMS64CProtocol.h"
 
@@ -42,3 +44,5 @@ TEST(USB_CSR_Pipe_Mini, Read)
         .Times(1);
     pipe.Read(reinterpret_cast<uint8_t*>(&pkt), length, timeout);
 }
+
+#endif // TESTING

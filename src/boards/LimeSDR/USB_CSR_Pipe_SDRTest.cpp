@@ -1,7 +1,9 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "tests/comms/USB/FX3/FX3Mock.h"
+#include "comms/USB/FX3/FX3Mock.h"
 #include "boards/LimeSDR/USB_CSR_Pipe_SDR.h"
 #include "LMS64CProtocol.h"
 
@@ -104,3 +106,5 @@ TEST(USB_CSR_Pipe_SDR, ReadControlTransfer)
 #endif
     pipe.Read(reinterpret_cast<uint8_t*>(&pkt), length, timeout);
 }
+
+#endif // TESTING

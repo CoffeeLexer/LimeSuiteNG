@@ -7,7 +7,7 @@
 #include "limesuiteng/SDRDevice.h"
 #include "limesuiteng/VersionInfo.h"
 #include "limesuiteng/Logger.h"
-#include "MemoryPool.h"
+#include "memory/MemoryPool.h"
 
 #include <algorithm>
 #include <array>

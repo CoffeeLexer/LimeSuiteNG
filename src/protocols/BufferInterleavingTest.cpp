@@ -1,3 +1,5 @@
+#ifdef TESTING
+
 #include <gtest/gtest.h>
 
 #include "BufferInterleaving.h"
@@ -216,3 +218,5 @@ TEST(BufferDeinterleaving, MIMO_I16_to_I16)
     EXPECT_EQ(outputA, expectedOutputA);
     EXPECT_EQ(outputB, expectedOutputB);
 }
+
+#endif // TESTING

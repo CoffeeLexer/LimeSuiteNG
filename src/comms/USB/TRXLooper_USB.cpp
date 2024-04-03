@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "FPGA_common.h"
+#include "FPGA_common/FPGA_common.h"
 #include "limesuiteng/LMS7002M.h"
 #include <ciso646>
 #include "limesuiteng/Logger.h"

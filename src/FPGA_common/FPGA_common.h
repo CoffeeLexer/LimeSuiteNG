@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-#include "SamplesPacket.h"
+#include "protocols/SamplesPacket.h"
 #include "DataPacket.h"
 #include "TRXLooper.h"
 #include "limesuiteng/complex.h"

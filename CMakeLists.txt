@@ -81,7 +81,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     #enable warnings in Debug configurations
-    add_compile_options(-Wall -Wpedantic)
+    add_compile_options(-Wall -Wpedantic )
 
     #symbols are only exported from libraries/modules explicitly
     add_compile_options(-fvisibility=hidden)
@@ -170,10 +170,11 @@ endif()
 # GTest
 ########################################################################
 include(CMakeDependentOption)
-cmake_dependent_option(ENABLE_TESTING "Use GoogleTest to test the library" ON "NOT BUILD_SHARED_LIBS" OFF)
+cmake_dependent_option(ENABLE_TESTING "Use GoogleTest to test the library" ON "" OFF)
 cmake_dependent_option(ENABLE_CODE_COVERAGE "Use gcov/lcov to generate a code coverage report" ON "ENABLE_TESTING" OFF)
 
 if(ENABLE_TESTING)
+    add_compile_definitions(TESTING)
     include(CTest)
     include(FetchContent)
     FetchContent_Declare(
@@ -188,9 +189,7 @@ if(ENABLE_TESTING)
     if (MSVC)
         set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     endif()
-
     FetchContent_MakeAvailable(googletest)
-    enable_testing()
 endif()
 
 ########################################################################
@@ -261,7 +260,7 @@ endif()
 ########################################################################
 # CMake Project config files
 ########################################################################
-if (ENABLE_HEADERS AND ENABLE_LIBRARY)
+if (ENABLE_HEADERS AND ENABLE_LIBRARY AND NOT ENABLE_TESTING)
     configure_file(
         ${PROJECT_SOURCE_DIR}/cmake/Modules/limesuitengConfigVersion.in.cmake
         ${PROJECT_BINARY_DIR}/limesuitengConfigVersion.cmake

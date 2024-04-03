@@ -14,7 +14,7 @@
 #include "AvgRmsCounter.h"
 #include "BufferInterleaving.h"
 #include "DataPacket.h"
-#include "FPGA_common.h"
+#include "FPGA_common/FPGA_common.h"
 #include "LitePCIe.h"
 #include "limesuiteng/commonTypes.h"
 #include "limesuiteng/complex.h"

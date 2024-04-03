@@ -7,7 +7,7 @@
 #include <cctype>
 #include <fstream>
 #include <chrono>
-#include "FPGA_common.h"
+#include "FPGA_common/FPGA_common.h"
 #include "limesuiteng/Logger.h"
 
 using namespace std;

@@ -1,8 +1,10 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "tests/comms/USB/FT601/FT601Mock.h"
-#include "tests/comms/USB/USB_CSR_PipeMock.h"
+#include "comms/USB/FT601/FT601Mock.h"
+#include "comms/USB/USB_CSR_PipeMock.h"
 #include "boards/LimeSDR_Mini/LimeSDR_Mini.h"
 #include "comms/USB/LMS64C_FPGA_Over_USB.h"
 #include "comms/USB/LMS64C_LMS7002M_Over_USB.h"
@@ -181,3 +183,5 @@ TEST(LimeSDR_Mini, Constructor)
 
     LimeSDR_Mini(lms7002mRoute, fpgaRoute, usbComms, usbPipe);
 }
+
+#endif // TESTING

@@ -1,7 +1,9 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "tests/protocols/SerialPortMock.h"
+#include "protocols/SerialPortMock.h"
 #include "LMS64CProtocol.h"
 
 using namespace lime;
@@ -35,19 +37,26 @@ MATCHER_P(IsBlockCountCorrect, blockCount, "Checks if the packet has the correct
     return packet->blockCount == blockCount;
 }
 
-TEST(LMS64CProtocol, FPGASPIEmptyTest)
+MATCHER_P(IsPeripheralIDCorrect, periphID, "Checks if the packet has the correct peripheral ID")
+{
+    auto packet = reinterpret_cast<const LMS64CPacket*>(arg);
+
+    return packet->periphID == periphID;
+}
+
+TEST(LMS64CProtocol, LMS7002MSPIEmptyTest)
 {
     SerialPortMock mockPort{};
 
     EXPECT_CALL(mockPort, Write(_, sizeof(LMS64CPacket), _)).Times(0);
     EXPECT_CALL(mockPort, Read(_, sizeof(LMS64CPacket), _)).Times(0);
 
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, nullptr, nullptr, 0);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, nullptr, nullptr, 0);
 
     EXPECT_EQ(returnValue, OpStatus::SUCCESS);
 }
 
-TEST(LMS64CProtocol, FPGASPIOneCountTestValueRead)
+TEST(LMS64CProtocol, LMS7002MSPIOneCountTestValueRead)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
@@ -57,18 +66,18 @@ TEST(LMS64CProtocol, FPGASPIOneCountTestValueRead)
         .WillByDefault(DoAll(
             SetArrayArgument<0>(reinterpret_cast<uint8_t*>(&packet), reinterpret_cast<uint8_t*>(&packet + 1)), ReturnArg<1>()));
 
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_RD), IsBlockCountCorrect(1)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_RD), IsBlockCountCorrect(1)), PACKET_SIZE, _))
         .Times(1);
     EXPECT_CALL(mockPort, Read(_, PACKET_SIZE, _)).Times(1);
 
     uint32_t mosi = 1U;
     uint32_t miso = 2U;
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, &mosi, &miso, 1);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, &mosi, &miso, 1);
 
     EXPECT_EQ(returnValue, OpStatus::SUCCESS);
 }
 
-TEST(LMS64CProtocol, FPGASPIOneCountTestValueWrite)
+TEST(LMS64CProtocol, LMS7002MSPIOneCountTestValueWrite)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
@@ -78,18 +87,18 @@ TEST(LMS64CProtocol, FPGASPIOneCountTestValueWrite)
         .WillByDefault(DoAll(
             SetArrayArgument<0>(reinterpret_cast<uint8_t*>(&packet), reinterpret_cast<uint8_t*>(&packet + 1)), ReturnArg<1>()));
 
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
         .Times(1);
     EXPECT_CALL(mockPort, Read(_, PACKET_SIZE, _)).Times(1);
 
     uint32_t mosi = 1U;
     SetWriteBit(mosi);
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, &mosi, nullptr, 1);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, &mosi, nullptr, 1);
 
     EXPECT_EQ(returnValue, OpStatus::SUCCESS);
 }
 
-TEST(LMS64CProtocol, FPGASPIWriteReadReadWrite)
+TEST(LMS64CProtocol, LMS7002MSPIWriteReadReadWrite)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
@@ -101,13 +110,13 @@ TEST(LMS64CProtocol, FPGASPIWriteReadReadWrite)
         .WillByDefault(DoAll(
             SetArrayArgument<0>(reinterpret_cast<uint8_t*>(&packet), reinterpret_cast<uint8_t*>(&packet + 1)), ReturnArg<1>()));
 
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_RD), IsBlockCountCorrect(2)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_RD), IsBlockCountCorrect(2)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
 
@@ -118,12 +127,12 @@ TEST(LMS64CProtocol, FPGASPIWriteReadReadWrite)
     SetWriteBit(mosi[3]);
 
     std::vector<uint32_t> miso{ 1U, 2U, 3U, 4U };
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, mosi.data(), miso.data(), 4);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, mosi.data(), miso.data(), 4);
 
     EXPECT_EQ(returnValue, OpStatus::SUCCESS);
 }
 
-TEST(LMS64CProtocol, FPGASPIReadWriteReadReadWrite)
+TEST(LMS64CProtocol, LMS7002MSPIReadWriteReadReadWrite)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
@@ -135,16 +144,16 @@ TEST(LMS64CProtocol, FPGASPIReadWriteReadReadWrite)
         .WillByDefault(DoAll(
             SetArrayArgument<0>(reinterpret_cast<uint8_t*>(&packet), reinterpret_cast<uint8_t*>(&packet + 1)), ReturnArg<1>()));
 
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_RD), IsBlockCountCorrect(1)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_RD), IsBlockCountCorrect(1)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_RD), IsBlockCountCorrect(2)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_RD), IsBlockCountCorrect(2)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_WR), IsBlockCountCorrect(1)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
 
@@ -155,12 +164,12 @@ TEST(LMS64CProtocol, FPGASPIReadWriteReadReadWrite)
     SetWriteBit(mosi[4]);
 
     std::vector<uint32_t> miso{ 1U, 2U, 3U, 4U, 5U };
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, mosi.data(), miso.data(), 5);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, mosi.data(), miso.data(), 5);
 
     EXPECT_EQ(returnValue, OpStatus::SUCCESS);
 }
 
-TEST(LMS64CProtocol, FPGASPISixteenWrites)
+TEST(LMS64CProtocol, LMS7002MSPISixteenWrites)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
@@ -172,10 +181,10 @@ TEST(LMS64CProtocol, FPGASPISixteenWrites)
         .WillByDefault(DoAll(
             SetArrayArgument<0>(reinterpret_cast<uint8_t*>(&packet), reinterpret_cast<uint8_t*>(&packet + 1)), ReturnArg<1>()));
 
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_WR), IsBlockCountCorrect(14)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_WR), IsBlockCountCorrect(14)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_WR), IsBlockCountCorrect(2)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_WR), IsBlockCountCorrect(2)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
 
@@ -188,12 +197,12 @@ TEST(LMS64CProtocol, FPGASPISixteenWrites)
     std::vector<uint32_t> mosis(16, mosi);
     std::vector<uint32_t> misos(16, miso);
 
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, mosis.data(), misos.data(), 16);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, mosis.data(), misos.data(), 16);
 
     EXPECT_EQ(returnValue, OpStatus::SUCCESS);
 }
 
-TEST(LMS64CProtocol, FPGASPISixteenReads)
+TEST(LMS64CProtocol, LMS7002MSPISixteenReads)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
@@ -205,10 +214,10 @@ TEST(LMS64CProtocol, FPGASPISixteenReads)
         .WillByDefault(DoAll(
             SetArrayArgument<0>(reinterpret_cast<uint8_t*>(&packet), reinterpret_cast<uint8_t*>(&packet + 1)), ReturnArg<1>()));
 
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_RD), IsBlockCountCorrect(14)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_RD), IsBlockCountCorrect(14)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
-    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_BRDSPI_RD), IsBlockCountCorrect(2)), PACKET_SIZE, _))
+    EXPECT_CALL(mockPort, Write(AllOf(IsCommandCorrect(LMS64CProtocol::CMD_LMS7002_RD), IsBlockCountCorrect(2)), PACKET_SIZE, _))
         .Times(1)
         .InSequence(writeSequence);
 
@@ -220,12 +229,12 @@ TEST(LMS64CProtocol, FPGASPISixteenReads)
     std::vector<uint32_t> mosis(16, mosi);
     std::vector<uint32_t> misos(16, miso);
 
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, mosis.data(), misos.data(), 16);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, mosis.data(), misos.data(), 16);
 
     EXPECT_EQ(returnValue, OpStatus::SUCCESS);
 }
 
-TEST(LMS64CProtocol, FPGASPINotFullyWritten)
+TEST(LMS64CProtocol, LMS7002MSPINotFullyWritten)
 {
     SerialPortMock mockPort{};
 
@@ -237,12 +246,12 @@ TEST(LMS64CProtocol, FPGASPINotFullyWritten)
     uint32_t mosi = 1U;
     uint32_t miso = 2U;
 
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, &mosi, &miso, 1);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, &mosi, &miso, 1);
 
     EXPECT_EQ(returnValue, OpStatus::IO_FAILURE);
 }
 
-TEST(LMS64CProtocol, FPGASPINotFullyRead)
+TEST(LMS64CProtocol, LMS7002MSPINotFullyRead)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
@@ -260,16 +269,16 @@ TEST(LMS64CProtocol, FPGASPINotFullyRead)
     uint32_t mosi = 1U;
     uint32_t miso = 2U;
 
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, &mosi, &miso, 1);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, &mosi, &miso, 1);
 
     EXPECT_EQ(returnValue, OpStatus::IO_FAILURE);
 }
 
-TEST(LMS64CProtocol, FPGASPIWrongStatus)
+TEST(LMS64CProtocol, LMS7002MSPIWrongStatus)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
-    packet.status = LMS64CProtocol::STATUS_UNKNOWN_CMD;
+    packet.status = LMS64CProtocol::STATUS_ERROR_CMD;
 
     ON_CALL(mockPort, Read(_, PACKET_SIZE, _))
         .WillByDefault(DoAll(
@@ -283,12 +292,12 @@ TEST(LMS64CProtocol, FPGASPIWrongStatus)
     uint32_t mosi = 1U;
     uint32_t miso = 2U;
 
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, &mosi, &miso, 1);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, &mosi, &miso, 1);
 
     EXPECT_EQ(returnValue, OpStatus::IO_FAILURE);
 }
 
-TEST(LMS64CProtocol, FPGASPINotFullyWrittenOnSecondCall)
+TEST(LMS64CProtocol, LMS7002MSPINotFullyWrittenOnSecondCall)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
@@ -306,12 +315,12 @@ TEST(LMS64CProtocol, FPGASPINotFullyWrittenOnSecondCall)
 
     std::vector<uint32_t> miso{ 1U, 2U };
 
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, mosi.data(), miso.data(), 2);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, mosi.data(), miso.data(), 2);
 
     EXPECT_EQ(returnValue, OpStatus::IO_FAILURE);
 }
 
-TEST(LMS64CProtocol, FPGASPINotFullyReadOnSecondCall)
+TEST(LMS64CProtocol, LMS7002MSPINotFullyReadOnSecondCall)
 {
     SerialPortMock mockPort{};
     LMS64CPacket packet{};
@@ -329,7 +338,34 @@ TEST(LMS64CProtocol, FPGASPINotFullyReadOnSecondCall)
 
     std::vector<uint32_t> miso{ 1U, 2U };
 
-    OpStatus returnValue = LMS64CProtocol::FPGA_SPI(mockPort, mosi.data(), miso.data(), 2);
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, 0, mosi.data(), miso.data(), 2);
 
     EXPECT_EQ(returnValue, OpStatus::IO_FAILURE);
 }
+
+TEST(LMS64CProtocol, LMS7002MSPIPassesThroughCorrectChip)
+{
+    SerialPortMock mockPort{};
+    LMS64CPacket packet{};
+    packet.status = LMS64CProtocol::STATUS_COMPLETED_CMD;
+
+    const uint8_t chip = 1U;
+
+    ON_CALL(mockPort, Read(_, PACKET_SIZE, _))
+        .WillByDefault(DoAll(
+            SetArrayArgument<0>(reinterpret_cast<uint8_t*>(&packet), reinterpret_cast<uint8_t*>(&packet + 1)), ReturnArg<1>()));
+
+    EXPECT_CALL(mockPort, Write(IsPeripheralIDCorrect(chip), PACKET_SIZE, _)).Times(2);
+    EXPECT_CALL(mockPort, Read(IsPeripheralIDCorrect(chip), PACKET_SIZE, _)).Times(2);
+
+    std::vector<uint32_t> mosi{ 1U, 2U };
+    SetWriteBit(mosi[1]);
+
+    std::vector<uint32_t> miso{ 1U, 2U };
+
+    OpStatus returnValue = LMS64CProtocol::LMS7002M_SPI(mockPort, chip, mosi.data(), miso.data(), 2);
+
+    EXPECT_EQ(returnValue, OpStatus::SUCCESS);
+}
+
+#endif // TESTING

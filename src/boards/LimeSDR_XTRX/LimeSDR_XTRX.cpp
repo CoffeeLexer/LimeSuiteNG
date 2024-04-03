@@ -5,7 +5,7 @@
 
 #include "limesuiteng/Logger.h"
 #include "LitePCIe.h"
-#include "FPGA_common.h"
+#include "FPGA_common/FPGA_common.h"
 #include "TRXLooper_PCIE.h"
 #include "FPGA_XTRX.h"
 #include "LMS64CProtocol.h"

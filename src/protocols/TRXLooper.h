@@ -7,7 +7,7 @@
 #include "limesuiteng/SDRDevice.h"
 #include "limesuiteng/complex.h"
 #include "PacketsFIFO.h"
-#include "MemoryPool.h"
+#include "memory/MemoryPool.h"
 #include "SamplesPacket.h"
 
 namespace lime {

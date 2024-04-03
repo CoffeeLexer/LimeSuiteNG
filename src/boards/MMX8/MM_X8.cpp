@@ -7,7 +7,7 @@
 #include "LitePCIe.h"
 #include "limesuiteng/LMS7002M.h"
 #include "lms7002m/LMS7002M_validation.h"
-#include "FPGA_common.h"
+#include "FPGA_common/FPGA_common.h"
 #include "DSP/Equalizer.h"
 
 #include "boards/LimeSDR_XTRX/LimeSDR_XTRX.h"

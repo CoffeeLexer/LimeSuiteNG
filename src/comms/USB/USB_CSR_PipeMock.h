@@ -1,8 +1,8 @@
 #ifndef LIME_USB_CSR_PIPEMOCK_H
 #define LIME_USB_CSR_PIPEMOCK_H
 
-#include "tests/protocols/SerialPortMock.h"
-#include "comms/USB/USB_CSR_Pipe.h"
+#include "protocols/SerialPortMock.h"
+#include "USB_CSR_Pipe.h"
 
 namespace lime::testing {
 

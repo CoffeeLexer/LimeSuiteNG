@@ -1,7 +1,9 @@
+#ifdef TESTING
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "tests/protocols/SerialPortMock.h"
+#include "protocols/SerialPortMock.h"
 #include "LMS64CProtocol.h"
 #include <array>
 
@@ -138,3 +140,5 @@ TEST(LMS64CProtocol, GPIOReadTestBufferSizeTooBig)
     uint8_t actual = 0U;
     EXPECT_THROW(LMS64CProtocol::GPIORead(mockPort, &actual, 64);, std::invalid_argument);
 }
+
+#endif // TESTING
