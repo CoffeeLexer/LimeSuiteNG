@@ -5,7 +5,7 @@
 
 namespace lime {
 
-enum class eDeviceNodeClass : uint8_t {
+enum class eDeviceNodeClass : uint32_t {
     ADF4002,
     CDCM6208,
     FPGA,
@@ -14,6 +14,7 @@ enum class eDeviceNodeClass : uint8_t {
     FPGA_XTRX,
     LMS7002M,
     SDRDevice,
+    CFR_CONTROL,
 };
 
 }

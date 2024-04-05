@@ -10,6 +10,7 @@
 #include <wx/msgdlg.h>
 
 #include "lms7002_mainPanel.h"
+#include "pnlEqualizer.h"
 
 #include "lms7suiteAppFrame.h"
 #include "dlgAbout.h"
@@ -426,6 +427,12 @@ ISOCPanel* CreateGUI(wxWindow* parent, eDeviceNodeClass deviceNodeClass, void* s
         sdrPanel->Setup(reinterpret_cast<SDRDevice*>(socPtr));
         sdrPanel->Hide();
         return sdrPanel;
+    }
+    case eDeviceNodeClass::CFR_CONTROL: {
+        pnlEqualizer* pnl = new pnlEqualizer(parent, wxNewId());
+        pnl->Setup(reinterpret_cast<lime::Equalizer*>(socPtr));
+        pnl->Hide();
+        return pnl;
     }
     default:
         lime::warning("Unrecognized device class(%u)", static_cast<uint8_t>(deviceNodeClass));

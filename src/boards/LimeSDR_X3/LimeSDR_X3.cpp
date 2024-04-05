@@ -261,8 +261,12 @@ LimeSDR_X3::LimeSDR_X3(std::shared_ptr<IComms> spiLMS7002M,
 
     auto fpgaNode = std::make_shared<DeviceNode>("FPGA", eDeviceNodeClass::FPGA_X3, mFPGA);
     fpgaNode->children.push_back(std::make_shared<DeviceNode>("LMS_1", eDeviceNodeClass::LMS7002M, lms1));
+
     fpgaNode->children.push_back(std::make_shared<DeviceNode>("LMS_2", eDeviceNodeClass::LMS7002M, lms2));
     fpgaNode->children.push_back(std::make_shared<DeviceNode>("LMS_3", eDeviceNodeClass::LMS7002M, lms3));
+
+    fpgaNode->children.push_back(std::make_shared<DeviceNode>("LMS_X", eDeviceNodeClass::CFR_CONTROL, mEqualizer));
+
     desc.socTree = std::make_shared<DeviceNode>("X3", eDeviceNodeClass::SDRDevice, this);
     desc.socTree->children.push_back(fpgaNode);
 
