@@ -6,7 +6,7 @@
 #include <cstring>
 #include <getopt.h>
 #include <string_view>
-#include <args.hxx>
+#include "args/args.hxx"
 
 using namespace std;
 using namespace lime;
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
     {
         parser.ParseCLI(argc, argv);
     }
-    catch (const args::Help)
+    catch (const args::Help&)
     {
         cout << parser;
         return EXIT_SUCCESS;
