@@ -126,7 +126,7 @@ static std::string ReadFile(const std::string &fileName)
 
 int main(int argc, char** argv)
 {
-    args::ArgumentParser                    parser("limeSPI - CLI Memory device flashing", "");
+    args::ArgumentParser                    parser("limeSPI - Control status registers I/O", "");
     args::HelpFlag                          help(parser, "help", "This help", {'h', "help"});
 
     args::Group                             commands(parser, "commands");

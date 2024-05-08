@@ -239,7 +239,7 @@ static std::vector<int> ParseIntArray(args::NargsValueFlag<int>& flag)
 
 int main(int argc, char** argv)
 {
-    args::ArgumentParser                parser("limeSPI - CLI Memory device flashing", "");
+    args::ArgumentParser                parser("limeTRX - Realtime streaming of RF samples", "");
     args::HelpFlag                      helpFlag(parser, "help", "This help", {'h', "help"});
 
     args::ValueFlag<std::string>        deviceFlag(parser, "name", "Specifies which device to use", {'d', "device"});
