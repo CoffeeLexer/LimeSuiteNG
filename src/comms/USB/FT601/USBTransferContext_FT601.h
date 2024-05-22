@@ -1,7 +1,7 @@
 #ifndef LIME_USBTRANSFERCONTEXT_FT601_H
 #define LIME_USBTRANSFERCONTEXT_FT601_H
 
-#include "comms/USB/USBTransferContext.h"
+#include "USBTransferContext.h"
 
 #ifndef __unix__
     #include "FTD3XXLibrary/FTD3XX.h"

@@ -1,12 +1,7 @@
 #include "LMS7002M_SDRDevice.h"
 
 #include "DeviceExceptions.h"
-#include "FPGA_common.h"
 #include "limesuiteng/LMS7002M.h"
-#include "chips/LMS7002M/LMS7002MCSR_Data.h"
-#include "chips/LMS7002M/MCU_BD.h"
-#include "chips/LMS7002M/calibrations.h"
-#include "LMSBoards.h"
 #include "limesuiteng/Logger.h"
 #include "TRXLooper.h"
 #include "utilities/toString.h"
@@ -712,25 +707,6 @@ bool LMS7002M_SDRDevice::GetSXLocked(uint8_t moduleIndex, TRXDir trx)
 {
     auto lms = mLMSChips.at(moduleIndex);
     return lms->GetSXLocked(trx);
-}
-
-unsigned int LMS7002M_SDRDevice::ReadRegister(uint8_t moduleIndex, unsigned int address, bool useFPGA)
-{
-    if (useFPGA)
-    {
-        return ReadFPGARegister(address);
-    }
-
-    auto lms = mLMSChips.at(moduleIndex);
-    return lms->SPI_read(address);
-}
-
-OpStatus LMS7002M_SDRDevice::WriteRegister(uint8_t moduleIndex, unsigned int address, unsigned int value, bool useFPGA)
-{
-    if (useFPGA)
-        return WriteFPGARegister(address, value);
-
-    return mLMSChips.at(moduleIndex)->SPI_write(address, value);
 }
 
 OpStatus LMS7002M_SDRDevice::LoadConfig(uint8_t moduleIndex, const std::string& filename)

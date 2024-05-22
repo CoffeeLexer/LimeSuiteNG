@@ -1,7 +1,7 @@
 #ifndef LIME_LITEPCIE_H
 #define LIME_LITEPCIE_H
 
-#include "comms/IDMA.h"
+#include "IDMA.h"
 #include "limesuiteng/config.h"
 #include "limesuiteng/OpStatus.h"
 

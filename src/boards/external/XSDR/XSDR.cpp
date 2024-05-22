@@ -1,6 +1,6 @@
 #include "XSDR.h"
 
-#include "LMSBoards.h"
+#include "comms/protocols/LMSBoards.h"
 
 namespace lime {
 

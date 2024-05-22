@@ -1,8 +1,6 @@
 #ifndef LIME_DATAPACKET_H
 #define LIME_DATAPACKET_H
 
-#include "BufferInterleaving.h"
-
 #include <cassert>
 #include <cstddef>
 #include <cstring>

@@ -1,5 +1,16 @@
 #include "USBTransferContext.h"
 
+#ifdef __unix__
+    #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wpedantic"
+    #endif
+    #include <libusb.h>
+    #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+    #endif
+#endif
+
 using namespace lime;
 
 USBTransferContext::USBTransferContext()

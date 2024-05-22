@@ -1,7 +1,7 @@
 #include "pnlGPIO.h"
 #include "limesuiteng/Logger.h"
 #include "limesuiteng/SDRDescriptor.h"
-#include "protocols/LMSBoards.h"
+#include "comms/protocols/LMSBoards.h"
 
 #include <wx/sizer.h>
 #include <wx/stattext.h>

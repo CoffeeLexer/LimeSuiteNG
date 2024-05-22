@@ -51,6 +51,8 @@ struct LMS_APIDevice {
     StatsDeltas statsDeltas;
 
     uint8_t moduleIndex;
+    int32_t fpgaChip;
+    int32_t lmsChip;
 
     std::vector<StreamBuffer> streamBuffers;
     lms_dev_info_t* deviceInfo;
@@ -199,6 +201,65 @@ API_EXPORT int CALL_CONV LMS_GetDeviceList(lms_info_str_t* dev_list)
     return handles.size();
 }
 
+static int ReadRegister(SDRDevice* device, const int32_t chipSelect, uint32_t address, uint16_t* val)
+{
+    if (device == nullptr)
+        return -1;
+
+    if (val)
+    {    
+        uint32_t mosi = (1 << 31) | address << 16;
+        uint32_t miso;
+        OpStatus status = device->SPI(chipSelect, &mosi, &miso, 1);
+
+        if (status != OpStatus::Success)
+            return lime::error("Failed to read register at %04X.", address);
+
+        *val = 0xFFFF & miso;
+    }
+
+    return 0;
+}
+
+static int WriteRegister(SDRDevice* device, const int32_t chipSelect, uint32_t address, uint16_t val)
+{
+    if (device == nullptr)
+        return -1;
+
+    if (val)
+    {
+        uint32_t mosi = (1 << 31) | address << 16 | val;
+        OpStatus status = device->SPI(chipSelect, &mosi, nullptr, 1);
+
+        if (status != OpStatus::Success)
+            return lime::error("Failed to write register at %04X.", address);
+    }
+
+    return 0;
+}
+
+
+static void SelectSPIChips(SDRDevice* device, int32_t& fpga, int32_t& lms)
+{
+    fpga = lms = -1;
+
+    if (!device)
+        return;
+
+    for (const auto& chip : device->GetDescriptor().spiSlaveIds)
+    {
+        if (chip.first.find("FPGA") != std::string::npos && fpga == -1)
+            fpga = chip.second;
+
+        if (chip.first.find("LMS") != std::string::npos && lms == -1)
+            lms = chip.second;
+
+        if (fpga != -1 && lms != -1)
+            return;
+    }
+    return;
+}
+
 API_EXPORT int CALL_CONV LMS_Open(lms_device_t** device, const lms_info_str_t info, void* args)
 {
     if (device == nullptr)
@@ -221,6 +282,7 @@ API_EXPORT int CALL_CONV LMS_Open(lms_device_t** device, const lms_info_str_t in
             }
 
             auto apiDevice = new LMS_APIDevice{ dev };
+            SelectSPIChips(apiDevice->device, apiDevice->fpgaChip, apiDevice->lmsChip);
 
             *device = apiDevice;
             return LMS_SUCCESS;
@@ -1674,9 +1736,9 @@ API_EXPORT int CALL_CONV LMS_SetNCOPhase(lms_device_t* device, bool dir_tx, size
     {
         for (unsigned i = 0; i < LMS_NCO_VAL_COUNT; i++)
         {
-            uint16_t addr = dir_tx ? 0x0244 : 0x0444;
-            uint16_t pho = static_cast<uint16_t>(65536 * (phase[i] / 360));
-            apiDevice->device->WriteRegister(apiDevice->moduleIndex, addr + i, pho);
+            const uint16_t addr = dir_tx ? 0x0244 : 0x0444;
+            const uint16_t pho = static_cast<uint16_t>(65536 * (phase[i] / 360));
+            WriteRegister(apiDevice->device, apiDevice->lmsChip, addr + i, pho);
         }
 
         auto& selectionParameter = dir_tx ? SEL_TX : SEL_RX;
@@ -1704,7 +1766,8 @@ API_EXPORT int CALL_CONV LMS_GetNCOPhase(lms_device_t* device, bool dir_tx, size
         for (std::size_t i = 0; i < LMS_NCO_VAL_COUNT; ++i)
         {
             uint16_t addr = dir_tx ? 0x0244 : 0x0444;
-            uint16_t pho = apiDevice->device->ReadRegister(apiDevice->moduleIndex, addr + i);
+            uint16_t pho;
+            ReadRegister(apiDevice->device, apiDevice->lmsChip, addr + i, &pho);
 
             phase[i] = 360 * pho / 65536.0;
         }
@@ -1754,78 +1817,36 @@ API_EXPORT int CALL_CONV LMS_WriteLMSReg(lms_device_t* device, uint32_t address,
 {
     LMS_APIDevice* apiDevice = CheckDevice(device);
     if (apiDevice == nullptr)
-    {
         return -1;
-    }
 
-    try
-    {
-        apiDevice->device->WriteRegister(apiDevice->moduleIndex, address, val);
-    } catch (...)
-    {
-        return lime::error("Failed to write register at %04X.", address);
-    }
-
-    return 0;
+    return WriteRegister(apiDevice->device, apiDevice->lmsChip, address, val);
 }
 
 API_EXPORT int CALL_CONV LMS_ReadLMSReg(lms_device_t* device, uint32_t address, uint16_t* val)
 {
     LMS_APIDevice* apiDevice = CheckDevice(device);
     if (apiDevice == nullptr)
-    {
         return -1;
-    }
 
-    try
-    {
-        if (val)
-            *val = apiDevice->device->ReadRegister(apiDevice->moduleIndex, address);
-    } catch (...)
-    {
-        return lime::error("Failed to read register at %04X.", address);
-    }
-
-    return 0;
+    return ReadRegister(apiDevice->device, apiDevice->lmsChip, address, val);
 }
 
 API_EXPORT int CALL_CONV LMS_WriteFPGAReg(lms_device_t* device, uint32_t address, uint16_t val)
 {
     LMS_APIDevice* apiDevice = CheckDevice(device);
     if (apiDevice == nullptr)
-    {
         return -1;
-    }
 
-    try
-    {
-        apiDevice->device->WriteRegister(apiDevice->moduleIndex, address, val, true);
-    } catch (...)
-    {
-        return lime::error("Failed to write register at %04X.", address);
-    }
-
-    return 0;
+    return WriteRegister(apiDevice->device, apiDevice->fpgaChip, address, val);
 }
 
 API_EXPORT int CALL_CONV LMS_ReadFPGAReg(lms_device_t* device, uint32_t address, uint16_t* val)
 {
     LMS_APIDevice* apiDevice = CheckDevice(device);
     if (apiDevice == nullptr)
-    {
         return -1;
-    }
 
-    try
-    {
-        if (val)
-            *val = apiDevice->device->ReadRegister(apiDevice->moduleIndex, address, true);
-    } catch (...)
-    {
-        return lime::error("Failed to read register at %04X.", address);
-    }
-
-    return 0;
+    return ReadRegister(apiDevice->device, apiDevice->fpgaChip, address, val);
 }
 
 API_EXPORT int CALL_CONV LMS_UploadWFM(lms_device_t* device, const void** samples, uint8_t chCount, size_t sample_count, int format)

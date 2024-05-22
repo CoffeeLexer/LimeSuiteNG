@@ -23,7 +23,7 @@
 #include "utility/dlgDeviceInfo.h"
 #include <functional>
 #include "boards/pnlBoardControls.h"
-#include "protocols/LMSBoards.h"
+#include "comms/protocols/LMSBoards.h"
 #include "utility/SPI_wxgui.h"
 #include "events.h"
 #include "ISOCPanel.h"

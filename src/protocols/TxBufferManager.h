@@ -6,7 +6,7 @@
 
 #include "BufferInterleaving.h"
 #include "limesuiteng/SDRDevice.h"
-#include "protocols/DataPacket.h"
+#include "comms/protocols/DataPacket.h"
 
 namespace lime {
 

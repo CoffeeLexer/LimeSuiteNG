@@ -405,26 +405,6 @@ bool LimeSDR_MMX8::GetSXLocked(uint8_t moduleIndex, TRXDir trx)
     return mSubDevices[moduleIndex]->GetSXLocked(0, trx);
 }
 
-unsigned int LimeSDR_MMX8::ReadRegister(uint8_t moduleIndex, unsigned int address, bool useFPGA)
-{
-    if (moduleIndex >= 8)
-    {
-        moduleIndex = 0;
-    }
-
-    return mSubDevices[moduleIndex]->ReadRegister(0, address, useFPGA);
-}
-
-OpStatus LimeSDR_MMX8::WriteRegister(uint8_t moduleIndex, unsigned int address, unsigned int value, bool useFPGA)
-{
-    if (moduleIndex >= 8)
-    {
-        moduleIndex = 0;
-    }
-
-    return mSubDevices[moduleIndex]->WriteRegister(0, address, value, useFPGA);
-}
-
 OpStatus LimeSDR_MMX8::LoadConfig(uint8_t moduleIndex, const std::string& filename)
 {
     if (moduleIndex >= 8)

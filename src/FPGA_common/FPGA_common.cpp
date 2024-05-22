@@ -1,6 +1,6 @@
 #include "FPGA_common.h"
 #include "comms/ISPI.h"
-#include "LMSBoards.h"
+#include "comms/protocols/LMSBoards.h"
 #include "limesuiteng/Logger.h"
 #include "limesuiteng/SDRDescriptor.h"
 #include "WriteRegistersBatch.h"

@@ -1,9 +1,21 @@
 #include "USBEntry.h"
 #include "limesuiteng/Logger.h"
 #include "limesuiteng/DeviceHandle.h"
-#include "CommonFunctions.h"
 
 #include <string_view>
+#include <sstream>
+#include <iomanip>
+
+#ifdef __unix__
+    #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wpedantic"
+    #endif
+    #include <libusb.h>
+    #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+    #endif
+#endif
 
 using namespace lime;
 using namespace std::literals::string_literals;
@@ -141,7 +153,11 @@ DeviceHandle USBEntry::GetDeviceHandle(
         handle.name = std::string(characterBuffer, size_t(descriptorStringLength));
     }
 
-    handle.addr = intToHex(desc.idVendor) + ':' + intToHex(desc.idProduct);
+    std::stringstream stream;
+    stream << std::setfill('0') << std::setw(sizeof(desc.idVendor) * 2) << std::hex << desc.idVendor
+        << ":"
+        << std::setfill('0') << std::setw(sizeof(desc.idProduct) * 2) << std::hex << desc.idProduct;
+    handle.addr = stream.str();
 
     if (desc.iSerialNumber > 0)
     {

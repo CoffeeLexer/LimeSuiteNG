@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "SamplesPacket.h"
-#include "DataPacket.h"
+#include "comms/protocols/DataPacket.h"
 #include "TRXLooper.h"
 #include "limesuiteng/complex.h"
 #include "limesuiteng/OpStatus.h"

@@ -8,6 +8,7 @@
 #include "limesuiteng/SDRDescriptor.h"
 #include "ISerialPort.h"
 #include "LMS64CProtocol.h"
+#include "LMSBoards.h"
 #include <chrono>
 #include <cassert>
 #include <cmath>

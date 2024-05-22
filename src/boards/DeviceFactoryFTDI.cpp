@@ -8,7 +8,6 @@
 #include "USB_CSR_Pipe_Mini.h"
 #include "LMS64C_LMS7002M_Over_USB.h"
 #include "LMS64C_FPGA_Over_USB.h"
-#include "CommonFunctions.h"
 #include "FT601/FT601.h"
 
 #ifndef __unix__
@@ -79,7 +78,11 @@ std::vector<DeviceHandle> DeviceFactoryFTDI::enumerate(const DeviceHandle& hint)
             handle.media = Flags & FT_FLAGS_SUPERSPEED ? "USB 3"s : Flags & FT_FLAGS_HISPEED ? "USB 2"s : "USB"s;
             handle.name = Description;
             handle.serial = SerialNumber;
-            handle.addr = intToHex(vendorId) + ':' + intToHex(productId);
+            std::stringstream stream;
+            stream << std::setfill('0') << std::setw(sizeof(vendorId) * 2) << std::hex << vendorId
+                << ":"
+                << std::setfill('0') << std::setw(sizeof(productId) * 2) << std::hex << productId;
+            handle.addr = stream.str();
             // Add handle conditionally
             if (handle.IsEqualIgnoringEmpty(hint))
                 handles.push_back(handle);

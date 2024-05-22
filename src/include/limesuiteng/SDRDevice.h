@@ -299,21 +299,6 @@ class LIME_API SDRDevice
     /// @return A value indicating whether the VCO comparators of the clock generator are locked or not.
     virtual bool GetSXLocked(uint8_t moduleIndex, TRXDir trx) = 0;
 
-    /// @brief Reads the value of the given register.
-    /// @param moduleIndex The device index to read from.
-    /// @param address The memory address to read from.
-    /// @param useFPGA Whether to read memory from the FPGA or not.
-    /// @return The value read from the register.
-    virtual unsigned int ReadRegister(uint8_t moduleIndex, unsigned int address, bool useFPGA = false) = 0;
-
-    /// @brief Writes the given register value to the given address.
-    /// @param moduleIndex The device index to configure.
-    /// @param address The address of the memory to write to.
-    /// @param value The value to write to the device's memory.
-    /// @param useFPGA Whether to write to the FPGA or not (default false)
-    /// @return The status of the operation.
-    virtual OpStatus WriteRegister(uint8_t moduleIndex, unsigned int address, unsigned int value, bool useFPGA = false) = 0;
-
     /// @brief Loads the configuration of a device from a given file.
     /// @param moduleIndex The device index to write the configuration into.
     /// @param filename The file to read the data from.

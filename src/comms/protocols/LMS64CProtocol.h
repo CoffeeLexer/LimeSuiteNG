@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "limesuiteng/OpStatus.h"
-#include "LMSBoards.h"
 
 namespace lime {
 

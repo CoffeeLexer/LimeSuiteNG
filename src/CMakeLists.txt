@@ -24,7 +24,6 @@ set(LIME_SUITE_SOURCES
     OEMTesting.cpp
     logger/Logger.cpp
     logger/LoggerCString.cpp
-    protocols/LMS64CProtocol.cpp
     protocols/TRXLooper.cpp
     protocols/BufferInterleaving.cpp
     protocols/AvgRmsCounter.cpp
@@ -125,9 +124,10 @@ endif()
 ########################################################################
 ## Supported connections
 ########################################################################
-include(comms/USB/CMakeLists.txt)
-include(comms/PCIe/CMakeLists.txt)
-include(boards/CMakeLists.txt)
+add_subdirectory(comms/protocols)
+add_subdirectory(comms/USB)
+add_subdirectory(comms/PCIe)
+add_subdirectory(boards)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/boards/BoardSupportLoader.in.cpp ${CMAKE_CURRENT_BINARY_DIR}/BoardSupportLoader.cpp)
 

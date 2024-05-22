@@ -15,7 +15,7 @@
 #include "pnlX8.h"
 #include "pnlXTRX.h"
 
-#include "protocols/ADCUnits.h"
+#include "comms/protocols/ADCUnits.h"
 #include <cassert>
 #include <vector>
 #include "lms7suiteEvents.h"

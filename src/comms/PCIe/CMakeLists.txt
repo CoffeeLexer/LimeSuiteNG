@@ -1,13 +1,11 @@
 ########################################################################
 ## Support for ConnectionLitePCIe connection
 ########################################################################
-set(THIS_SOURCE_DIR comms/PCIe)
-
-set(COMMS_LITE_PCIE_SOURCES
-    ${THIS_SOURCE_DIR}/LMS64C_FPGA_Over_PCIe.cpp
-    ${THIS_SOURCE_DIR}/LMS64C_LMS7002M_Over_PCIe.cpp
-    ${THIS_SOURCE_DIR}/LitePCIe.cpp
-    ${THIS_SOURCE_DIR}/PCIE_CSR_Pipe.cpp)
+add_library("comms-pcie"
+    LMS64C_FPGA_Over_PCIe.cpp
+    LMS64C_LMS7002M_Over_PCIe.cpp
+    LitePCIe.cpp
+    PCIE_CSR_Pipe.cpp)
 
 ########################################################################
 ## Feature registration
@@ -23,8 +21,6 @@ endif()
 ########################################################################
 ## Add to library
 ########################################################################
-target_sources(${MAIN_LIBRARY_NAME} PRIVATE ${COMMS_LITE_PCIE_SOURCES})
-target_include_directories(${MAIN_LIBRARY_NAME} PRIVATE ${THIS_SOURCE_DIR})
 
 # build kernel module only on Linux
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -33,6 +29,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     cmake_dependent_option(LITEPCIE_KERNEL_MODULE "Build Linux LitePCIe kernel module" ON "UNIX; NOT APPLE" OFF)
     add_feature_info(LITEPCIE_KERNEL_MODULE LITEPCIE_KERNEL_MODULE "Build Linux LitePCIe kernel module")
     if(LITEPCIE_KERNEL_MODULE)
-        add_subdirectory(${THIS_SOURCE_DIR}/linux-kernel-module)
+        add_subdirectory(linux-kernel-module)
     endif()
 endif()
+
+target_include_directories("comms-pcie" PRIVATE ../)

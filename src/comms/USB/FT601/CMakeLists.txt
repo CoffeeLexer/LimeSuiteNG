@@ -1,3 +1,12 @@
+set(FTDI_NAME "lime-comms-usb-ftdi")
+
+add_library(${FTDI_NAME} STATIC
+    FT601.cpp
+    USBTransferContext_FT601.cpp)
+
+target_link_libraries(${FTDI_NAME} PRIVATE "lime-comms-usb" "lime-comms-protocols")
+target_include_directories("lime-comms-usb-ftdi" PRIVATE ../)
+
 if(WIN32)
     set(FTDI_FOUND TRUE)
     set(FTDI_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/external/FTD3XXLibrary)
@@ -24,8 +33,8 @@ if(WIN32)
 
     message(STATUS "FTDI_INCLUDE_DIRS: ${FTDI_INCLUDE_DIRS}")
     message(STATUS "FTDI_LIBRARIES: ${FTDI_LIBRARIES}")
-    target_link_libraries(${MAIN_LIBRARY_NAME} PRIVATE ${FTDI_LIBRARIES})
-    target_include_directories(${MAIN_LIBRARY_NAME} PRIVATE ${FTDI_INCLUDE_DIRS})
+    target_link_libraries(${FTDI_NAME} PRIVATE ${FTDI_LIBRARIES})
+    target_include_directories(${FTDI_NAME} PRIVATE ${FTDI_INCLUDE_DIRS})
 elseif(UNIX)
     find_package(libusb-1.0)
     set_package_properties(
@@ -38,11 +47,11 @@ elseif(UNIX)
         message(WARNING "libusb-1.0 libraries not found. Omitting FTDI USB support")
     endif()
 
-    target_link_libraries(${MAIN_LIBRARY_NAME} PRIVATE ${LIBUSB_1_LIBRARIES})
+    target_link_libraries(${FTDI_NAME} PRIVATE ${LIBUSB_1_LIBRARIES})
 
     if(LIBUSB_1_INCLUDE_DIR)
         target_include_directories(
-            ${MAIN_LIBRARY_NAME} PRIVATE $<BUILD_INTERFACE:${LIBUSB_1_INCLUDE_DIRS}> $<INSTALL_INTERFACE:include>)
+            ${FTDI_NAME} PRIVATE $<BUILD_INTERFACE:${LIBUSB_1_INCLUDE_DIRS}> $<INSTALL_INTERFACE:include>)
     endif()
 endif()
 
@@ -54,7 +63,3 @@ if(NOT ENABLE_USB_FTDI)
     return()
 endif()
 
-set(CONNECTION_FT601_SOURCES ${CMAKE_CURRENT_LIST_DIR}/FT601.cpp ${CMAKE_CURRENT_LIST_DIR}/USBTransferContext_FT601.cpp)
-
-target_include_directories(${MAIN_LIBRARY_NAME} PRIVATE ${THIS_SOURCE_DIR})
-target_sources(${MAIN_LIBRARY_NAME} PRIVATE ${CONNECTION_FT601_SOURCES})

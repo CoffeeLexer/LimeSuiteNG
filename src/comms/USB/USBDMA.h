@@ -1,7 +1,7 @@
 #ifndef LIME_USBDMA_H
 #define LIME_USBDMA_H
 
-#include "comms/IDMA.h"
+#include "IDMA.h"
 
 #include <cstdint>
 #include <memory>

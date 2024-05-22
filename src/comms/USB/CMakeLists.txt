@@ -1,26 +1,38 @@
 ########################################################################
 ## Support for USB STREAM connection
 ########################################################################
-set(THIS_SOURCE_DIR comms/USB)
-
-include(${THIS_SOURCE_DIR}/FT601/CMakeLists.txt)
-include(${THIS_SOURCE_DIR}/FX3/CMakeLists.txt)
-
 if(NOT ENABLE_USB_FX3 AND NOT ENABLE_USB_FTDI)
     return()
 endif()
 
-set(COMMS_USB_SOURCES
-    ${THIS_SOURCE_DIR}/LMS64C_FPGA_Over_USB.cpp
-    ${THIS_SOURCE_DIR}/LMS64C_LMS7002M_Over_USB.cpp
-    ${THIS_SOURCE_DIR}/LMS64C_ADF4002_Over_USB.cpp
-    ${THIS_SOURCE_DIR}/USBDMA.cpp
-    ${THIS_SOURCE_DIR}/USBEntry.cpp
-    ${THIS_SOURCE_DIR}/USBGeneric.cpp
-    ${THIS_SOURCE_DIR}/USBTransferContext.cpp)
+add_library("lime-comms-usb" STATIC 
+    LMS64C_FPGA_Over_USB.cpp
+    LMS64C_LMS7002M_Over_USB.cpp
+    LMS64C_ADF4002_Over_USB.cpp
+    USBDMA.cpp
+    USBEntry.cpp
+    USBGeneric.cpp
+    USBTransferContext.cpp)
+
+add_subdirectory(FX3)
+add_subdirectory(FT601)
+target_include_directories("lime-comms-usb" PRIVATE ../)
+
+if(NOT LIBUSB_1_FOUND)
+find_package(libusb-1.0)
+endif()
+
+if(NOT LIBUSB_1_FOUND)
+    message(WARNING "libusb-1.0 libraries not found. Omitting USB support")
+endif()
+
+target_link_libraries("lime-comms-usb" PRIVATE ${LIBUSB_1_LIBRARIES})
+
+if(LIBUSB_1_INCLUDE_DIR)
+    target_include_directories(
+        "lime-comms-usb" PUBLIC $<BUILD_INTERFACE:${LIBUSB_1_INCLUDE_DIRS}> $<INSTALL_INTERFACE:include>)
+endif()
 
 ########################################################################
 ## Add to library
 ########################################################################
-target_include_directories(${MAIN_LIBRARY_NAME} PRIVATE ${THIS_SOURCE_DIR})
-target_sources(${MAIN_LIBRARY_NAME} PRIVATE ${COMMS_USB_SOURCES})

@@ -1,6 +1,6 @@
 #include "USBDMA.h"
 
-#include "comms/IDMA.h"
+#include "IDMA.h"
 #include "protocols/DataPacket.h"
 #include "USBGeneric.h"
 

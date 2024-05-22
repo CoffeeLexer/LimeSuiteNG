@@ -5,7 +5,6 @@
 #include "LMS64C_LMS7002M_Over_USB.h"
 #include "LMS64C_FPGA_Over_USB.h"
 #include "limesuiteng/Logger.h"
-#include "CommonFunctions.h"
 
 #include <memory>
 #include <string_view>
@@ -75,7 +74,12 @@ std::vector<DeviceHandle> DeviceFactoryFX3::enumerate(const DeviceHandle& hint)
         uint16_t productId = device.ProductID;
         handle.name = device.DeviceName;
         handle.serial = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(device.SerialNumber);
-        handle.addr = intToHex(vendorId) + ':' + intToHex(productId);
+
+        std::stringstream stream;
+        stream << std::setfill('0') << std::setw(sizeof(vendorId) * 2) << std::hex << vendorId
+            << ":"
+            << std::setfill('0') << std::setw(sizeof(productId) * 2) << std::hex << productId;
+        handle.addr = stream.str();
 
         if (handle.IsEqualIgnoringEmpty(hint))
             handles.push_back(handle);

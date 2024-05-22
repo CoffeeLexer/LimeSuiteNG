@@ -3,7 +3,6 @@
 #include <fcntl.h>
 
 #include "limesuiteng/DeviceHandle.h"
-#include "CommonFunctions.h"
 #include "limesuiteng/Logger.h"
 #include "LitePCIe.h"
 #include "LMSBoards.h"
@@ -61,7 +60,9 @@ std::vector<DeviceHandle> DeviceFactoryPCIe::enumerate(const DeviceHandle& hint)
         int subDeviceIndex = 0;
         LMS64CProtocol::GetFirmwareInfo(*controlPipe, fw, subDeviceIndex);
 
-        handle.serial = intToHex(fw.boardSerialNumber);
+        std::stringstream stream;
+        stream << std::setfill('0') << std::setw(sizeof(fw.boardSerialNumber) * 2) << std::hex << fw.boardSerialNumber;
+        handle.addr = stream.str();
 
         // Add handle conditionally, filter by serial number
         if (handle.IsEqualIgnoringEmpty(hint))

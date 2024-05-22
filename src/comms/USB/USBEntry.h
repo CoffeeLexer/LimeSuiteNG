@@ -5,16 +5,12 @@
 #include <cstdint>
 #include <set>
 
-#ifdef __unix__
-    #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wpedantic"
-    #endif
-    #include <libusb.h>
-    #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-    #endif
+#ifdef __unix_
 #endif
+struct libusb_context;
+struct libusb_device;
+struct libusb_device_handle;
+struct libusb_device_descriptor;
 
 namespace lime {
 
@@ -49,14 +45,14 @@ class USBEntry : public DeviceRegistryEntry
 
   protected:
 #ifdef __unix__
-    static libusb_context* ctx;
+    static struct libusb_context* ctx;
     static uint ctxRefCount;
 #endif
   private:
     std::set<VidPid> mDeviceIds;
 #ifdef __unix__
-    std::string_view GetUSBDeviceSpeedString(libusb_device* device);
-    DeviceHandle GetDeviceHandle(libusb_device_handle* tempHandle, libusb_device* device, const libusb_device_descriptor& desc);
+    std::string_view GetUSBDeviceSpeedString(struct libusb_device* device);
+    DeviceHandle GetDeviceHandle(struct libusb_device_handle* tempHandle, struct libusb_device* device, const struct libusb_device_descriptor& desc);
 #endif
 };
 

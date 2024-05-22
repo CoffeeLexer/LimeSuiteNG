@@ -17,7 +17,7 @@
 #include <wx/msgdlg.h>
 #include <wx/wfstream.h>
 
-#include "protocols/LMSBoards.h"
+#include "comms/protocols/LMSBoards.h"
 #include "limesuiteng/SDRDescriptor.h"
 
 const long LMS_Programing_wxgui::ID_PROGRAMING_FINISHED_EVENT = wxNewId();

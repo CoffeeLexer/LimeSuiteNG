@@ -74,9 +74,6 @@ class LIME_API LMS7002M_SDRDevice : public SDRDevice
 
     bool GetSXLocked(uint8_t moduleIndex, TRXDir trx) override;
 
-    unsigned int ReadRegister(uint8_t moduleIndex, unsigned int address, bool useFPGA = false) override;
-    OpStatus WriteRegister(uint8_t moduleIndex, unsigned int address, unsigned int value, bool useFPGA = false) override;
-
     OpStatus LoadConfig(uint8_t moduleIndex, const std::string& filename) override;
     OpStatus SaveConfig(uint8_t moduleIndex, const std::string& filename) override;
 

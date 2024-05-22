@@ -24,7 +24,7 @@
 #include <vector>
 
 #include "IModuleFrame.h"
-#include "protocols/LMSBoards.h"
+#include "comms/protocols/LMSBoards.h"
 #include "limesuiteng/OpStatus.h"
 #include "limesuiteng/types.h"
 

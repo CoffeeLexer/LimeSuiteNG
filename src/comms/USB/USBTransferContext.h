@@ -5,19 +5,12 @@
 #include <condition_variable>
 #include <mutex>
 
-#ifdef __unix__
-    #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wpedantic"
-    #endif
-    #include <libusb.h>
-    #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-    #endif
-#endif
-
 #ifndef __unix__
     #include <windows.h>
+#endif
+    
+#ifdef __unix__
+struct libusb_transfer;
 #endif
 
 namespace lime {

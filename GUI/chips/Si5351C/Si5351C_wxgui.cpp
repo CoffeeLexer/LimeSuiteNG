@@ -8,7 +8,7 @@
 #include "chips/Si5351C/Si5351C.h"
 #include "limesuiteng/SDRDevice.h"
 #include "CommsToDevice.h"
-#include "protocols/LMSBoards.h"
+#include "comms/protocols/LMSBoards.h"
 
 //(*InternalHeaders(Si5351C_wxgui)
 #include <wx/intl.h>

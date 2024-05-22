@@ -6,7 +6,7 @@
 #include <chrono>
 #include <thread>
 #include "limesuiteng/Logger.h"
-#include "LMSBoards.h"
+#include "comms/protocols/LMSBoards.h"
 
 #ifndef NDEBUG
     #define LMS_VERBOSE_OUTPUT

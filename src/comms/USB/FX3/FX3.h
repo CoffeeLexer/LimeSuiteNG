@@ -1,5 +1,5 @@
 #pragma once
-#include "comms/USB/USBGeneric.h"
+#include "USBGeneric.h"
 
 #include <vector>
 #include <set>
@@ -8,6 +8,17 @@
 #include <memory>
 #include <thread>
 #include <ciso646>
+
+#ifdef __unix__
+    #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wpedantic"
+    #endif
+    #include <libusb.h>
+    #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+    #endif
+#endif
 
 #ifndef __unix__
     #include "CyAPI.h"

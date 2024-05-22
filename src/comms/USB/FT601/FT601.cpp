@@ -1,8 +1,19 @@
 #include "FT601.h"
-#include "DataPacket.h"
-#include "DeviceExceptions.h"
 #include "USBTransferContext_FT601.h"
 #include "limesuiteng/Logger.h"
+
+#ifdef __unix__
+    #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wpedantic"
+    #endif
+    #include <libusb.h>
+    #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+    #endif
+#endif
+
+#define FPGA_PACKET_SIZE 4096
 
 using namespace std::literals::string_literals;
 
@@ -51,8 +62,8 @@ bool FT601::Connect(uint16_t vid, uint16_t pid, const std::string_view serial)
     FT_AbortPipe(mFTHandle, STREAM_BULK_WRITE_ADDRESS);
     FT_SetStreamPipe(mFTHandle, FALSE, FALSE, CONTROL_BULK_READ_ADDRESS, 64);
     FT_SetStreamPipe(mFTHandle, FALSE, FALSE, CONTROL_BULK_WRITE_ADDRESS, 64);
-    FT_SetStreamPipe(mFTHandle, FALSE, FALSE, STREAM_BULK_READ_ADDRESS, sizeof(FPGA_TxDataPacket));
-    FT_SetStreamPipe(mFTHandle, FALSE, FALSE, STREAM_BULK_WRITE_ADDRESS, sizeof(FPGA_TxDataPacket));
+    FT_SetStreamPipe(mFTHandle, FALSE, FALSE, STREAM_BULK_READ_ADDRESS, FPGA_PACKET_SIZE);
+    FT_SetStreamPipe(mFTHandle, FALSE, FALSE, STREAM_BULK_WRITE_ADDRESS, FPGA_PACKET_SIZE);
     FT_SetPipeTimeout(mFTHandle, CONTROL_BULK_WRITE_ADDRESS, 500);
     FT_SetPipeTimeout(mFTHandle, CONTROL_BULK_READ_ADDRESS, 500);
     FT_SetPipeTimeout(mFTHandle, STREAM_BULK_READ_ADDRESS, 0);
@@ -143,7 +154,8 @@ int32_t FT601::BulkTransfer(uint8_t endPointAddr, uint8_t* data, int length, int
 
 int32_t FT601::ControlTransfer(int requestType, int request, int value, int index, uint8_t* data, uint32_t length, int32_t timeout)
 {
-    throw(OperationNotSupported("ControlTransfer not supported on FT601 connections."s));
+    lime::warning("ControlTransfer not supported on FT601 connections.");
+    return -1;
 }
 
 #ifndef __unix__
@@ -260,7 +272,7 @@ void FT601::AbortEndpointXfers(uint8_t endPointAddr)
         FT_FlushPipe(mFTHandle, STREAM_BULK_READ_ADDRESS);
     }
 
-    FT_SetStreamPipe(mFTHandle, FALSE, FALSE, endPointAddr, sizeof(FPGA_TxDataPacket));
+    FT_SetStreamPipe(mFTHandle, FALSE, FALSE, endPointAddr, FPGA_PACKET_SIZE);
 
     WaitForXfers(endPointAddr);
 }
@@ -332,12 +344,12 @@ int FT601::ResetStreamBuffers()
         return -1;
     }
 
-    if (FT_SetStreamPipe(mFTHandle, FALSE, FALSE, STREAM_BULK_READ_ADDRESS, sizeof(FPGA_TxDataPacket)) != 0)
+    if (FT_SetStreamPipe(mFTHandle, FALSE, FALSE, STREAM_BULK_READ_ADDRESS, FPGA_PACKET_SIZE) != 0)
     {
         return -1;
     }
 
-    if (FT_SetStreamPipe(mFTHandle, FALSE, FALSE, STREAM_BULK_WRITE_ADDRESS, sizeof(FPGA_TxDataPacket)) != 0)
+    if (FT_SetStreamPipe(mFTHandle, FALSE, FALSE, STREAM_BULK_WRITE_ADDRESS, FPGA_PACKET_SIZE) != 0)
     {
         return -1;
     }
@@ -352,12 +364,12 @@ int FT601::ResetStreamBuffers()
         return -1;
     }
 
-    if (FT_SetStreamPipe(STREAM_BULK_WRITE_ADDRESS, sizeof(FPGA_TxDataPacket)) != 0)
+    if (FT_SetStreamPipe(STREAM_BULK_WRITE_ADDRESS, FPGA_PACKET_SIZE) != 0)
     {
         return -1;
     }
 
-    if (FT_SetStreamPipe(STREAM_BULK_READ_ADDRESS, sizeof(FPGA_TxDataPacket)) != 0)
+    if (FT_SetStreamPipe(STREAM_BULK_READ_ADDRESS, FPGA_PACKET_SIZE) != 0)
     {
         return -1;
     }

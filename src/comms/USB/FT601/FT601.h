@@ -1,6 +1,6 @@
 #pragma once
 
-#include "comms/USB/USBGeneric.h"
+#include "USBGeneric.h"
 #include "limesuiteng/config.h"
 #include "USBTransferContext_FT601.h"
 
